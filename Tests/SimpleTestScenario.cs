@@ -9,7 +9,7 @@
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	[TestClass]
-	public class SimpleTestScenario : Scenario, IConsumer<HostCreated>
+	public class SimpleTestScenario : Scenario, IConsumer<AssetsMerged>
 	{
 		private bool _messageReceived;
 
@@ -36,7 +36,7 @@
 			builder.RegisterInstance(this);
 		}
 
-		void IConsumer<HostCreated>.Handle(HostCreated message)
+		void IConsumer<AssetsMerged>.Handle(AssetsMerged message)
 		{
 			_messageReceived = true;
 		}

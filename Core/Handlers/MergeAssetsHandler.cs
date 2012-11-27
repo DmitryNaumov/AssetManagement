@@ -11,12 +11,10 @@
 
 	internal sealed class MergeAssetsHandler : IConsumer<MergeAssets>
 	{
-		private readonly IBus _bus;
 		private readonly IRepository _repository;
 
-		public MergeAssetsHandler(IBus bus, IRepository repository)
+		public MergeAssetsHandler(IRepository repository)
 		{
-			_bus = bus;
 			_repository = repository;
 		}
 

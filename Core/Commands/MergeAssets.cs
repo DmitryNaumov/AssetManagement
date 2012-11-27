@@ -2,7 +2,6 @@
 {
 	using System;
 	using AssetManagement.Contracts.Assets;
-	using AssetManagement.Infrastructure;
 	using AssetManagement.Infrastructure.Messaging;
 
 	internal sealed class MergeAssets : Message

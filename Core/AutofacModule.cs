@@ -12,6 +12,7 @@
 
 			builder.RegisterType<Saga>().AsImplementedInterfaces();
 			builder.RegisterType<HostListController>().AsImplementedInterfaces();
+			builder.RegisterType<MergeAssetsHandler>().AsImplementedInterfaces();
 		}
 	}
 }
