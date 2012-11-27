@@ -4,6 +4,7 @@ namespace AssetManagement.Tests
 	using System.Linq;
 	using System.Reflection;
 	using AssetManagement.Infrastructure;
+	using AssetManagement.Infrastructure.Messaging;
 	using Autofac;
 
 	public abstract class Scenario
@@ -44,7 +45,7 @@ namespace AssetManagement.Tests
 		private IContainer BuildContainerImpl()
 		{
 			var builder = new ContainerBuilder();
-			builder.RegisterAssemblyModules(typeof(IServiceBus).Assembly, typeof(Core.ThisAssembly).Assembly);
+			builder.RegisterAssemblyModules(typeof(IBus).Assembly, typeof(Core.ThisAssembly).Assembly);
 
 			OverrideRegistrations(builder);
 

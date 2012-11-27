@@ -6,6 +6,7 @@
 	using AssetManagement.Core.Commands;
 	using AssetManagement.Core.Events;
 	using AssetManagement.Infrastructure;
+	using AssetManagement.Infrastructure.Messaging;
 
 	[Serializable]
 	internal sealed class Saga : ISaga<AssetsFound>, IConsumer<HostResolved>, IConsumer<HostCreated>, IConsumer<HostResolutionAmbiguityDetected>, IConsumer<MergeRejected>, IConsumer<AssetsMerged>

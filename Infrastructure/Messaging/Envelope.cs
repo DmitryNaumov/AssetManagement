@@ -1,26 +1,6 @@
-namespace AssetManagement.Infrastructure
+namespace AssetManagement.Infrastructure.Messaging
 {
 	using System;
-
-	public interface ISendContext
-	{
-		void SetCorrelationId(Guid? correlationId);
-	}
-
-	internal sealed class SendContext : ISendContext
-	{
-		private readonly Envelope _envelope;
-
-		public SendContext(Envelope envelope)
-		{
-			_envelope = envelope;
-		}
-
-		public void SetCorrelationId(Guid? correlationId)
-		{
-			_envelope.CorrelationId = correlationId;
-		}
-	}
 
 	internal abstract class Envelope
 	{
@@ -45,7 +25,7 @@ namespace AssetManagement.Infrastructure
 
 		public override Type MessageType
 		{
-			get { return typeof (TMessage); }
+			get { return typeof(TMessage); }
 		}
 	}
 }

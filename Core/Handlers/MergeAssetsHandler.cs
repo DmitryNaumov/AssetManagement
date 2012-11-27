@@ -6,16 +6,17 @@
 	using AssetManagement.Core.Commands;
 	using AssetManagement.Core.Events;
 	using AssetManagement.Infrastructure;
+	using AssetManagement.Infrastructure.Messaging;
 	using AssetManagement.Infrastructure.Persistence;
 
 	internal sealed class MergeAssetsHandler : IConsumer<MergeAssets>
 	{
-		private readonly IServiceBus _serviceBus;
+		private readonly IBus _bus;
 		private readonly IRepository _repository;
 
-		public MergeAssetsHandler(IServiceBus serviceBus, IRepository repository)
+		public MergeAssetsHandler(IBus bus, IRepository repository)
 		{
-			_serviceBus = serviceBus;
+			_bus = bus;
 			_repository = repository;
 		}
 

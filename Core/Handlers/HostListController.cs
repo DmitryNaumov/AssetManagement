@@ -7,6 +7,7 @@
 	using AssetManagement.Core.Commands;
 	using AssetManagement.Core.Events;
 	using AssetManagement.Infrastructure;
+	using AssetManagement.Infrastructure.Messaging;
 	using AssetManagement.Infrastructure.Persistence;
 
 	internal sealed class HostListController : IConsumer<ResolveHost>

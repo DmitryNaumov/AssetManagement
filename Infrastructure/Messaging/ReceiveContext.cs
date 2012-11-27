@@ -1,32 +1,28 @@
-namespace AssetManagement.Infrastructure
+namespace AssetManagement.Infrastructure.Messaging
 {
 	using System;
-
-	public interface IReceiveContext
-	{
-		Guid? CorrelationId { get; }
-	}
+	using AssetManagement.Infrastructure.Utilities;
 
 	internal sealed class ReceiveContext : IReceiveContext
 	{
 		[ThreadStatic]
 		private static ReceiveContext _current;
 
-		private readonly IServiceBus _serviceBus;
+		private readonly IBus _bus;
 		private readonly Envelope _envelope;
 
-		public ReceiveContext(IServiceBus serviceBus, Envelope envelope)
+		public ReceiveContext(IBus bus, Envelope envelope)
 		{
-			_serviceBus = serviceBus;
+			_bus = bus;
 			_envelope = envelope;
 		}
 
-		public static IDisposable Create(IServiceBus serviceBus, Envelope envelope)
+		public static IDisposable Create(IBus bus, Envelope envelope)
 		{
 			if (_current != null)
 				throw new InvalidOperationException();
 
-			_current = new ReceiveContext(serviceBus, envelope);
+			_current = new ReceiveContext(bus, envelope);
 
 			return new DisposeAction(() => _current = null);
 		}
@@ -36,9 +32,9 @@ namespace AssetManagement.Infrastructure
 			get { return _current; }
 		}
 
-		public IServiceBus ServiceBus
+		public IBus Bus
 		{
-			get { return _serviceBus; }
+			get { return _bus; }
 		}
 
 		public Guid? CorrelationId

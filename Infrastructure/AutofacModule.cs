@@ -1,5 +1,6 @@
 ﻿namespace AssetManagement.Infrastructure
 {
+	using AssetManagement.Infrastructure.Messaging;
 	using AssetManagement.Infrastructure.Persistence;
 	using Autofac;
 
@@ -9,7 +10,7 @@
 		{
 			base.Load(builder);
 
-			builder.RegisterType<ServiceBus>().AsImplementedInterfaces().SingleInstance();
+			builder.RegisterType<InMemoryBus>().AsImplementedInterfaces().SingleInstance();
 			builder.RegisterType<Repository>().AsImplementedInterfaces().SingleInstance();
 		}
 	}

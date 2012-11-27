@@ -1,4 +1,4 @@
-namespace AssetManagement.Infrastructure
+namespace AssetManagement.Infrastructure.Messaging
 {
 	public abstract class Message
 	{
@@ -10,7 +10,7 @@ namespace AssetManagement.Infrastructure
 		{
 			var context = ReceiveContext.Current;
 			
-			context.ServiceBus.Publish(outgoingMessage, x => x.SetCorrelationId(context.CorrelationId));
+			context.Bus.Publish(outgoingMessage, x => x.SetCorrelationId(context.CorrelationId));
 		}
 	}
 }

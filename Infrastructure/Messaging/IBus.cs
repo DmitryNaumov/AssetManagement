@@ -1,8 +1,8 @@
-﻿namespace AssetManagement.Infrastructure
+﻿namespace AssetManagement.Infrastructure.Messaging
 {
 	using System;
 
-	public interface IServiceBus
+	public interface IBus
 	{
 		void Publish(object message, Action<ISendContext> contextCallback = null);
 

@@ -4,6 +4,7 @@
 	using AssetManagement.Contracts.Identities;
 	using AssetManagement.Core.Events;
 	using AssetManagement.Infrastructure;
+	using AssetManagement.Infrastructure.Messaging;
 	using Autofac;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -18,10 +19,10 @@
 		}
 
 		[When]
-		private void WhenAssetsFound(IServiceBus serviceBus)
+		private void WhenAssetsFound(IBus bus)
 		{
 			var @event = AssetsFound.New(new MediaAccessControlAddress("A"), new OperatingSystem("Windows"), new WebBrowser("Chrome"));
-			serviceBus.Replay(@event);
+			bus.Replay(@event);
 		}
 
 		[Then]

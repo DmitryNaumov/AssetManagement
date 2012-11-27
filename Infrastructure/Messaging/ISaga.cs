@@ -1,4 +1,4 @@
-namespace AssetManagement.Infrastructure
+namespace AssetManagement.Infrastructure.Messaging
 {
 	using System;
 	using AssetManagement.Infrastructure.Persistence;
@@ -16,7 +16,7 @@ namespace AssetManagement.Infrastructure
 	{
 		public static void Publish(this ISaga saga, object message)
 		{
-			ReceiveContext.Current.ServiceBus.Publish(message, x => x.SetCorrelationId(saga.Id));
+			ReceiveContext.Current.Bus.Publish(message, x => x.SetCorrelationId(saga.Id));
 		}
 	}
 }

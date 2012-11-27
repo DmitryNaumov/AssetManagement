@@ -2,6 +2,7 @@ namespace AssetManagement.Core.Events
 {
 	using System;
 	using AssetManagement.Infrastructure;
+	using AssetManagement.Infrastructure.Messaging;
 
 	internal sealed class AssetsMerged : Message
 	{

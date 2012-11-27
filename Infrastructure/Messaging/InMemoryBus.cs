@@ -1,4 +1,4 @@
-﻿namespace AssetManagement.Infrastructure
+﻿namespace AssetManagement.Infrastructure.Messaging
 {
 	using System;
 	using System.Collections.Generic;
@@ -9,14 +9,14 @@
 	using Autofac;
 	using Autofac.Core;
 
-	internal sealed class ServiceBus : IServiceBus
+	internal sealed class InMemoryBus : IBus
 	{
 		private readonly ILifetimeScope _lifetimeScope;
 		private readonly IRepository _sagaRepository;
 
 		private readonly Queue<Envelope> _queue = new Queue<Envelope>();
 
-		public ServiceBus(ILifetimeScope lifetimeScope, IRepository sagaRepository)
+		public InMemoryBus(ILifetimeScope lifetimeScope, IRepository sagaRepository)
 		{
 			_lifetimeScope = lifetimeScope;
 			_sagaRepository = sagaRepository;
@@ -133,14 +133,14 @@
 
 	public static class ServiceBusExtensions
 	{
-		public static void Replay(this IServiceBus serviceBus, params object[] messages)
+		public static void Replay(this IBus bus, params object[] messages)
 		{
 			foreach (var message in messages)
 			{
-				serviceBus.Publish(message);
+				bus.Publish(message);
 			}
 
-			SpinWait.SpinUntil(() => serviceBus.IsIdle());
+			SpinWait.SpinUntil(() => bus.IsIdle());
 		}
 	}
 }

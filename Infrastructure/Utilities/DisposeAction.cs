@@ -1,4 +1,4 @@
-namespace AssetManagement.Infrastructure
+namespace AssetManagement.Infrastructure.Utilities
 {
 	using System;
 
