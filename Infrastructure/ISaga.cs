@@ -8,12 +8,15 @@ namespace AssetManagement.Infrastructure
 		Guid Id { get; }
 	}
 
-	public interface ISaga<T> : ISaga, IOptimisticConcurrencyAware, IConsumer<T> where T : CorrelatedBy
+	public interface ISaga<T> : ISaga, IOptimisticConcurrencyAware, IConsumer<T>
 	{
 	}
 
-	public interface CorrelatedBy
+	public static class SagaExtensions
 	{
-		Guid CorrelationId { get; }
+		public static void Publish(this ISaga saga, object message)
+		{
+			ReceiveContext.Current.ServiceBus.Publish(message, x => x.SetCorrelationId(saga.Id));
+		}
 	}
 }

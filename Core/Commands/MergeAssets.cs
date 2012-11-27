@@ -4,12 +4,10 @@
 	using AssetManagement.Contracts.Assets;
 	using AssetManagement.Infrastructure;
 
-	internal sealed class MergeAssets : CorrelatedBy
+	internal sealed class MergeAssets : Message
 	{
-		public MergeAssets(Guid correlationId, Guid hostId, int version, Asset[] assets)
+		public MergeAssets(Guid hostId, int version, Asset[] assets)
 		{
-			CorrelationId = correlationId;
-
 			HostId = hostId;
 			Version = version;
 			Assets = assets;
@@ -20,7 +18,5 @@
 		public int Version { get; private set; }
 
 		public Asset[] Assets { get; private set; }
-
-		public Guid CorrelationId { get; private set; }
 	}
 }

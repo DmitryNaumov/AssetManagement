@@ -25,7 +25,7 @@
 			if (host.Version != message.Version)
 			{
 				// something has changed from the time we resolved host by identities, let saga re-run resolve process
-				_serviceBus.Publish(new MergeRejected(message.CorrelationId, host.Id));
+				message.ReplyWith(new MergeRejected(host.Id));
 
 				return;
 			}
@@ -34,7 +34,7 @@
 
 			_repository.Save(host.Id, host);
 
-			_serviceBus.Publish(new AssetsMerged(message.CorrelationId, host.Id));
+			message.ReplyWith(new AssetsMerged(host.Id));
 		}
 
 		private Host GetOrCreateHost(Guid hostId)

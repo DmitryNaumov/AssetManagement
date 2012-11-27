@@ -1,7 +1,7 @@
 ﻿namespace AssetManagement.Infrastructure
 {
 	using System;
-	using System.Collections;
+	using System.Collections.Generic;
 	using System.Linq;
 	using System.Reflection;
 	using System.Threading;
@@ -11,12 +11,10 @@
 
 	internal sealed class ServiceBus : IServiceBus
 	{
-		private static readonly MethodInfo Dispatcher = typeof(ServiceBus).GetMethod("DeliverMessage", BindingFlags.Instance | BindingFlags.NonPublic);
-
 		private readonly ILifetimeScope _lifetimeScope;
 		private readonly IRepository _sagaRepository;
 
-		private readonly Queue _queue = new Queue();
+		private readonly Queue<Envelope> _queue = new Queue<Envelope>();
 
 		public ServiceBus(ILifetimeScope lifetimeScope, IRepository sagaRepository)
 		{
@@ -24,21 +22,27 @@
 			_sagaRepository = sagaRepository;
 		}
 
-		public void Publish(object message)
+		public void Publish(object message, Action<ISendContext> contextCallback = null)
 		{
+			var envelope = (Envelope)GetType().GetMethod("WrapMessage", BindingFlags.NonPublic | BindingFlags.Instance).MakeGenericMethod(new[] {message.GetType()}).Invoke(this, new[] {message});
+
+			if (contextCallback != null)
+			{
+				contextCallback(new SendContext(envelope));
+			}
+
 			lock (_queue)
 			{
-				_queue.Enqueue(message);
+				_queue.Enqueue(envelope);
 				if (_queue.Count > 1)
 					return;
 			}
 
-			while (message != null)
+			while (envelope != null)
 			{
 				try
 				{
-					var method = Dispatcher.MakeGenericMethod(message.GetType());
-					method.Invoke(this, new[] {message});
+					GetType().GetMethod("PublishByType", BindingFlags.NonPublic | BindingFlags.Instance).MakeGenericMethod(new[] { envelope.MessageType }).Invoke(this, new[] { envelope });
 				}
 				catch (Exception ex)
 				{
@@ -48,7 +52,7 @@
 				lock (_queue)
 				{
 					_queue.Dequeue();
-					message = _queue.Count > 0 ? _queue.Peek() : null;
+					envelope = _queue.Count > 0 ? _queue.Peek() : null;
 				}
 			}
 		}
@@ -61,7 +65,7 @@
 			}
 		}
 
-		private void DeliverMessage<T>(T message)
+		private void PublishByType<T>(Envelope<T> envelope) where T : Message
 		{
 			foreach (var registration in _lifetimeScope.ComponentRegistry.Registrations)
 			{
@@ -73,11 +77,11 @@
 					{
 						if (services.Any(s => typeof(ISaga).IsAssignableFrom(s.ServiceType)))
 						{
-							InvokeSaga(registration, message);
+							InvokeSaga(registration, envelope);
 						}
 						else
 						{
-							InvokeHandler(registration, message);
+							InvokeHandler(registration, envelope);
 						}
 
 						break;
@@ -86,29 +90,44 @@
 			}
 		}
 
-		private void InvokeHandler<T>(IComponentRegistration registration, T message)
+		private void InvokeHandler<T>(IComponentRegistration registration, Envelope<T> envelope) where T : Message
 		{
-			var consumer = (IConsumer<T>)registration.Activator.ActivateInstance(_lifetimeScope, Enumerable.Empty<Parameter>());
-			consumer.Handle(message);
+			using (ReceiveContext.Create(this, envelope))
+			{
+				var message = envelope.Message;
+
+				var consumer = (IConsumer<T>) registration.Activator.ActivateInstance(_lifetimeScope, Enumerable.Empty<Parameter>());
+				consumer.Handle(message);
+			}
 		}
 
-		private void InvokeSaga<T>(IComponentRegistration registration, T message)
+		private void InvokeSaga<T>(IComponentRegistration registration, Envelope<T> envelope) where T : Message
 		{
-			var correlatedBy = (CorrelatedBy)message;
 			var initiatedBy = registration.Services.Cast<TypedService>().Single(service => service.ServiceType.IsGenericType && typeof(ISaga).IsAssignableFrom(service.ServiceType)).ServiceType;
 
 			ISaga saga;
 			if (initiatedBy.GetGenericArguments()[0] == typeof(T))
 			{
-				saga = (ISaga)registration.Activator.ActivateInstance(_lifetimeScope, new [] { new TypedParameter(typeof(Guid), correlatedBy.CorrelationId) });
+				saga = (ISaga)registration.Activator.ActivateInstance(_lifetimeScope, Enumerable.Empty<Parameter>());
 			}
 			else
 			{
-				saga = (ISaga)_sagaRepository.Get(correlatedBy.CorrelationId);
+				if (!envelope.CorrelationId.HasValue)
+					return;
+
+				saga = (ISaga)_sagaRepository.Get(envelope.CorrelationId.Value);
 			}
 
-			((IConsumer<T>) saga).Handle(message);
-			_sagaRepository.Save(saga.Id, saga);
+			using (ReceiveContext.Create(this, envelope))
+			{
+				((IConsumer<T>) saga).Handle(envelope.Message);
+				_sagaRepository.Save(saga.Id, saga);
+			}
+		}
+
+		private Envelope WrapMessage<T>(T message) where T : Message
+		{
+			return new Envelope<T>(message);
 		}
 	}
 

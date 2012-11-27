@@ -3,15 +3,12 @@
 	using System;
 	using AssetManagement.Infrastructure;
 
-	internal sealed class MergeRejected : CorrelatedBy
+	internal sealed class MergeRejected : Message
 	{
-		public MergeRejected(Guid correlationId, Guid hostId)
+		public MergeRejected(Guid hostId)
 		{
-			CorrelationId = correlationId;
 			HostId = hostId;
 		}
-
-		public Guid CorrelationId { get; private set; }
 
 		public Guid HostId { get; private set; }
 	}

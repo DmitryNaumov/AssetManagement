@@ -5,16 +5,13 @@
 	using AssetManagement.Contracts.Identities;
 	using AssetManagement.Infrastructure;
 
-	internal sealed class AssetsFound : CorrelatedBy
+	internal sealed class AssetsFound : Message
 	{
 		public AssetsFound(HostIdentity[] hostIdentities, Asset[] assets)
 		{
-			CorrelationId = Guid.NewGuid();
 			HostIdentities = hostIdentities;
 			Assets = assets;
 		}
-
-		public Guid CorrelationId { get; private set; }
 
 		public HostIdentity[] HostIdentities { get; private set; }
 

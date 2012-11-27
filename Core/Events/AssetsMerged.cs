@@ -3,15 +3,12 @@ namespace AssetManagement.Core.Events
 	using System;
 	using AssetManagement.Infrastructure;
 
-	internal sealed class AssetsMerged : CorrelatedBy
+	internal sealed class AssetsMerged : Message
 	{
-		public AssetsMerged(Guid correlationId, Guid hostId)
+		public AssetsMerged(Guid hostId)
 		{
-			CorrelationId = correlationId;
 			HostId = hostId;
 		}
-
-		public Guid CorrelationId { get; private set; }
 
 		public Guid HostId { get; private set; }
 	}

@@ -4,17 +4,14 @@ namespace AssetManagement.Core.Events
 	using AssetManagement.Contracts.Identities;
 	using AssetManagement.Infrastructure;
 
-	internal sealed class HostCreated : CorrelatedBy
+	internal sealed class HostCreated : Message
 	{
-		public HostCreated(Guid correlationId, Guid hostId, int version, HostIdentity[] hostIdentities)
+		public HostCreated(Guid hostId, int version, HostIdentity[] hostIdentities)
 		{
-			CorrelationId = correlationId;
 			HostId = hostId;
 			Version = version;
 			HostIdentities = hostIdentities;
 		}
-
-		public Guid CorrelationId { get; private set; }
 
 		public Guid HostId { get; private set; }
 

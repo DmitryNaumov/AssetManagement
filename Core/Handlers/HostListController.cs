@@ -13,12 +13,10 @@
 	{
 		private static readonly Guid Key = Guid.NewGuid();
 
-		private readonly IServiceBus _serviceBus;
 		private readonly IRepository _repository;
 
-		public HostListController(IServiceBus serviceBus, IRepository repository)
+		public HostListController(IRepository repository)
 		{
-			_serviceBus = serviceBus;
 			_repository = repository;
 		}
 
@@ -33,7 +31,7 @@
 					var response = ResolveHost(state, message);
 					_repository.Save(Key, state);
 
-					_serviceBus.Publish(response);
+					message.ReplyWith(response);
 					break;
 				}
 				catch (OptimisticConcurrencyException ex)
@@ -51,7 +49,7 @@
 			{
 				if (message.HostIdentities.All(identity => host.Value.Contains(identity)))
 				{
-					return new HostResolved(message.CorrelationId, host.Key.Item1, host.Key.Item2, message.HostIdentities);
+					return new HostResolved(host.Key.Item1, host.Key.Item2, message.HostIdentities);
 				}
 
 				if (message.HostIdentities.Any(identity => host.Value.Contains(identity)))
@@ -64,7 +62,7 @@
 			var hostId = Guid.NewGuid();
 			state.Hosts.Add(Tuple.Create(hostId, 0), new List<HostIdentity>(message.HostIdentities));
 
-			return new HostCreated(message.CorrelationId, hostId, 0, message.HostIdentities);
+			return new HostCreated(hostId, 0, message.HostIdentities);
 		}
 
 		[Serializable]

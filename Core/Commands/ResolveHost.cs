@@ -4,15 +4,12 @@
 	using AssetManagement.Contracts.Identities;
 	using AssetManagement.Infrastructure;
 
-	internal sealed class ResolveHost : CorrelatedBy
+	internal sealed class ResolveHost : Message
 	{
-		public ResolveHost(Guid correlationId, HostIdentity[] hostIdentities)
+		public ResolveHost(HostIdentity[] hostIdentities)
 		{
-			CorrelationId = correlationId;
 			HostIdentities = hostIdentities;
 		}
-
-		public Guid CorrelationId { get; private set; }
 
 		public HostIdentity[] HostIdentities { get; private set; }
 	}

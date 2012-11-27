@@ -48,9 +48,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutofacModule.cs" />
+    <Compile Include="DisposeAction.cs" />
     <Compile Include="IConsumer.cs" />
+    <Compile Include="IReceiveContext.cs" />
     <Compile Include="ISaga.cs" />
+    <Compile Include="ISendContext.cs" />
     <Compile Include="IServiceBus.cs" />
+    <Compile Include="Message.cs" />
     <Compile Include="Persistence\IOptimisticConcurrencyAware.cs" />
     <Compile Include="Persistence\IRepository.cs" />
     <Compile Include="Persistence\OptimisticConcurrencyException.cs" />

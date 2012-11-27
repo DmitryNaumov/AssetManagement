@@ -52,9 +52,11 @@
     <Compile Include="Commands\MergeAssets.cs" />
     <Compile Include="Commands\ResolveHost.cs" />
     <Compile Include="Events\AssetsFound.cs" />
+    <Compile Include="Events\AssetsMerged.cs" />
     <Compile Include="Events\HostCreated.cs" />
     <Compile Include="Events\HostResolutionAmbiguityDetected.cs" />
     <Compile Include="Events\HostResolved.cs" />
+    <Compile Include="Events\MergeRejected.cs" />
     <Compile Include="Handlers\HostListController.cs" />
     <Compile Include="Handlers\MergeAssetsHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
