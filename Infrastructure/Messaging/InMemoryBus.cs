@@ -11,6 +11,9 @@
 
 	internal sealed class InMemoryBus : IBus
 	{
+		private static readonly MethodInfo WrapMessageMethod = typeof(InMemoryBus).GetMethod("WrapMessage", BindingFlags.NonPublic | BindingFlags.Instance);
+		private static readonly MethodInfo PublishByTypeMethod = typeof(InMemoryBus).GetMethod("PublishByType", BindingFlags.NonPublic | BindingFlags.Instance);
+
 		private readonly ILifetimeScope _lifetimeScope;
 		private readonly IRepository _sagaRepository;
 
@@ -24,7 +27,7 @@
 
 		public void Publish(object message, Action<ISendContext> contextCallback = null)
 		{
-			var envelope = (Envelope)GetType().GetMethod("WrapMessage", BindingFlags.NonPublic | BindingFlags.Instance).MakeGenericMethod(new[] {message.GetType()}).Invoke(this, new[] {message});
+			var envelope = (Envelope)WrapMessageMethod.MakeGenericMethod(new[] {message.GetType()}).Invoke(this, new[] {message});
 
 			if (contextCallback != null)
 			{
@@ -42,7 +45,7 @@
 			{
 				try
 				{
-					GetType().GetMethod("PublishByType", BindingFlags.NonPublic | BindingFlags.Instance).MakeGenericMethod(new[] { envelope.MessageType }).Invoke(this, new[] { envelope });
+					PublishByTypeMethod.MakeGenericMethod(new[] { envelope.MessageType }).Invoke(this, new[] { envelope });
 				}
 				catch (Exception ex)
 				{
